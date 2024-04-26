@@ -24,15 +24,15 @@ The following dependencies are required to build and run this project
 
 **Homebrew**
 ```sh
-  brew install protobuf protoc-gen-go protoc-gen-go-grpc
+brew install protobuf protoc-gen-go protoc-gen-go-grpc
 ```
 
 or 
 
 **Golang**
 ```sh
-  go install google.golang.org/grpc/cmd/protoc-gen-go@v1.1
-  go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.1
+go install google.golang.org/grpc/cmd/protoc-gen-go@v1.1
+go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.1
 ```
 
 ## Usage
@@ -49,4 +49,18 @@ or
   ```sh
   make client
   ```
+
+4. Head to your browser and navigate to `http://127.0.0.1:54130/` to interact with the API
+
+<img src="https://i.imgur.com/bte6gyU.png" alt="client screenshot" />
+
+```sh
+2024-04-26 08:34:12 INF Server is listening on port 8000
+2024-04-26 08:49:12 DBG Incoming Add request A=3 B=4
+2024-04-26 08:49:12 DBG Result for Add is 7 result=7
+2024-04-26 08:49:30 DBG Incoming Subtract request A=10 B=2
+2024-04-26 08:49:30 DBG Result for Subtract is 8 result=8
+```
+
+
 
