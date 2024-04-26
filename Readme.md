@@ -7,7 +7,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 
-This is a very simple calculator [GRPC](https://grpc.io/docs/what-is-grpc/introduction/) API written in Go. Why GRPC you may ask?
+This is a very simple calculator API written in Go. Why [GRPC](https://grpc.io/docs/what-is-grpc/introduction/) you may ask?
 Other than the fact that it's a modern, high-performance, open-source and universal [RPC](https://en.wikipedia.org/wiki/Remote_procedure_call) framework, it's also language agnostic. This means that you can write your server in Go and your client in Python, Java, C++, etc.
 
 **Available Operations**
