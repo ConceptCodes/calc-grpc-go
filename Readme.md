@@ -12,6 +12,9 @@ Other than the fact that it's a modern, high-performance, open-source and univer
 
 **Available Operations**
 - Add
+- Subtract
+- Multiply
+- Divide
 
 ## Prerequisites
 
