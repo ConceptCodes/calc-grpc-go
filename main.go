@@ -26,9 +26,10 @@ func main() {
 
 	pb.RegisterCalculatorServer(s, &server.CalcServer{})
 
+	log.Info().Msg("Server is listening on port 8000")
+
 	if err := s.Serve(listener); err != nil {
-		log.Err(err).Msg("failed to start server")
+		log.Err(err).Msg("Failed to start server")
 	}
 
-	log.Info().Msg("Server is listening on port 8000")
 }

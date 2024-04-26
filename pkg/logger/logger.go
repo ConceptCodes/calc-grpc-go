@@ -17,5 +17,5 @@ func New() zerolog.Logger {
 			return parse.Format(TimeFormat)
 		},
 	}
-	return zerolog.New(output).With().Timestamp().CallerWithSkipFrameCount(2).Logger()
+	return zerolog.New(output).With().Timestamp().Logger()
 }
