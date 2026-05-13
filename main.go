@@ -2,34 +2,32 @@ package main
 
 import (
 	"calc/cmd/server"
-	"calc/pb"
+	"calc/internal/bootstrap"
+	"calc/internal/calculator"
 	"calc/pkg/logger"
-	"net"
+	"context"
+	"os"
+	"os/signal"
+	"syscall"
 
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
+	"github.com/rs/zerolog"
 )
 
 const port = ":8080"
 
-var log = logger.New()
-
 func main() {
-	listener, err := net.Listen("tcp", port)
+	log := logger.New()
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
 
-	if err != nil {
-		log.Err(err).Msg("failed to create listener")
+	if err := bootstrap.Run(ctx, bootstrap.Config{
+		Address: port,
+		Logger:  log,
+		NewServer: func(logger zerolog.Logger) bootstrap.Server {
+			return server.NewGRPCServer(logger, calculator.New())
+		},
+	}); err != nil {
+		log.Err(err).Msg("server stopped")
+		os.Exit(1)
 	}
-
-	s := grpc.NewServer()
-	reflection.Register(s)
-
-	pb.RegisterCalculatorServer(s, &server.CalcServer{})
-
-	log.Info().Msg("Server is listening on port 8000")
-
-	if err := s.Serve(listener); err != nil {
-		log.Err(err).Msg("Failed to start server")
-	}
-
 }

@@ -2,10 +2,10 @@ package server
 
 import (
 	"context"
+	"errors"
 
-	"calc/internal/util"
+	"calc/internal/calculator"
 	"calc/pb"
-	"calc/pkg/logger"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -13,70 +13,71 @@ import (
 
 type CalcServer struct {
 	pb.UnimplementedCalculatorServer
+	calculator *calculator.Calculator
 }
 
-func NewCalcServer() *CalcServer {
-	return &CalcServer{}
+func NewCalcServer(calc *calculator.Calculator) *CalcServer {
+	if calc == nil {
+		calc = calculator.New()
+	}
+
+	return &CalcServer{calculator: calc}
 }
 
-var log = logger.New()
+func (s *CalcServer) engine() *calculator.Calculator {
+	if s.calculator == nil {
+		s.calculator = calculator.New()
+	}
+
+	return s.calculator
+}
 
 func (s *CalcServer) Add(
 	ctx context.Context, req *pb.CalculationRequest,
 ) (*pb.CalculationResponse, error) {
-	util.LogRequest("Add", req, log)
-	
 	res := &pb.CalculationResponse{
-		Result: req.A + req.B,
+		Result: s.engine().Add(req.A, req.B),
 	}
 
-	util.LogResponse("Add", res, log)
 	return res, nil
 }
 
 func (s *CalcServer) Subtract(
 	ctx context.Context, req *pb.CalculationRequest,
 ) (*pb.CalculationResponse, error) {
-	util.LogRequest("Subtract", req, log)
-
 	res := &pb.CalculationResponse{
-		Result: req.A - req.B,
+		Result: s.engine().Subtract(req.A, req.B),
 	}
 
-	util.LogResponse("Subtract", res, log)
 	return res, nil
 }
 
 func (s *CalcServer) Multiply(
 	ctx context.Context, req *pb.CalculationRequest,
 ) (*pb.CalculationResponse, error) {
-	util.LogRequest("Multiply", req, log)
-
 	res := &pb.CalculationResponse{
-		Result: req.A * req.B,
+		Result: s.engine().Multiply(req.A, req.B),
 	}
 
-	util.LogResponse("Multiply", res, log)
 	return res, nil
 }
 
 func (s *CalcServer) Divide(
 	ctx context.Context, req *pb.CalculationRequest,
 ) (*pb.CalculationResponse, error) {
-	util.LogRequest("Divide", req, log)
-
-	if req.B == 0 {
-		err := status.Errorf(
-			codes.InvalidArgument, "cannot divide by zero",
-		)
-		util.LogError("Divide", err, log)
+	result, err := s.engine().Divide(req.A, req.B)
+	if err != nil {
+		if errors.Is(err, calculator.ErrDivideByZero) {
+			return nil, status.Errorf(
+				codes.InvalidArgument, err.Error(),
+			)
+		}
 		return nil, err
 	}
 
 	res := &pb.CalculationResponse{
-		Result: req.A / req.B,
+		Result: result,
 	}
 
-	util.LogResponse("Divide", res, log)
 	return res, nil
 }
